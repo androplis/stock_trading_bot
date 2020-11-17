@@ -1,21 +1,30 @@
 import yfinance as yf
 import time
-import schedule
 from stocks import getStock
 
 buy = True
+balance = 1000.00
+
+def getStockPrice(stock):
+    """ Returns the last closing price of the given stock"""
+    day_history =  stock.history(period="1d", interval="1m")
+    return day_history["Close"][0]
+
 
 def buySell():
     stock = getStock("aapl")
-    print("Test")
-    # If buy
+    last_close = getStockPrice(stock)
+    
+    
+    if buy:
+        # Implement buy strategy
+        if balance > 0: # Check if money needs to be invested
+    else:
+        print("idk")
+        # Implement sell strategy
 
-    # If Sell
 
-# Run every monday-friday from 9:00-4:00
-schedule.every(10).seconds.do(buySell)
-
-# Infinite loop
+# Perform Trading
 while True:
-    schedule.run_pending()
-    time.sleep(10) # Run every min
+    buySell()
+    time.sleep(10) # Run every 10 seconds
