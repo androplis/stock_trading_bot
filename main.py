@@ -1,6 +1,6 @@
 import yfinance as yf
 import time
-from datetime import datetime
+import datetime
 from stocks import getStocks
 from stocks import Stock
 
@@ -28,30 +28,26 @@ class Portfolio:
         """ Looks at each stock and determines whether to buy or sell """
         for stock in self.watch_stocks:
             stock_history = stock.getStock().history(period="1d", interval="1m")
-            MA_20 = stock_history['Close'].rolling(20).mean()
+            MA_20 = stock_history['Close'].rolling(20).mean() 
             if stock.buy: 
                 # Look to Buy the stock
-                if MA_20[-1] < stock.getClose():
+                if MA_20[-1] < stock.getClose(): # Buy Trigger
                     print(MA_20[-1], " ", stock_history['Close'][-1], "- BUY")
-                    shares_bought = stock.buyStock(self.balance) # balance / 5
-
-                    # write buy data to files
-                    if shares_bought > 0: 
-                        buy_amount = shares_bought * stock.getClose()
-                        self.balance -= buy_amount
-                        # DATE TICKER BUY_AMOUNT NUM_SHARES RETURN
-                    else:
-                        print("Not enough money to purchase stocks.")
-                else:
+                    if stock.buyStock(self.balance): # balance / 5
+                        # write buy data to files
+                        self.balance -= stock.getBuyPrice()
+                        print(f"{datetime.datetime.now()} | BUY | {stock.getTicker()} | ${stock.getBuyPrice()} | {stock.getShares()}")
+                else: # Wait
                     print(MA_20[-1], " ", stock_history['Close'][-1], "- WAIT")
                     continue
             else: 
                 # Look to Sell the stock
-                if stock.getClose() >= stock.getUpperLimit() or stock.getClose() <= stock.getLowerLimit():
-                    self.balance += stock.getMarketValue()
-                    stock.sellStock(self.balance)
-                    print(MA_20[-1], " ", stock_history['Close'][-1], "- SELL - ", stock.getUpperLimit(), " , ", stock.getLowerLimit())
-                else:
+                if stock.getClose() >= stock.getUpperLimit() or stock.getClose() <= stock.getLowerLimit(): # Sell Thresholds
+                    num_shares = stock.sellStock()
+                    self.balance += stock.getSellPrice()
+                    print(MA_20[-1], " ", stock_history['Close'][-1], "- SELL")
+                    print(f"{datetime.datetime.now()} | SELL | {stock.getTicker()} | ${stock.getSellPrice()} | {num_shares}")
+                else: # Hold
                     print(MA_20[-1], " ", stock_history['Close'][-1], "- HOLD")
 
 if __name__ == "__main__":
@@ -59,7 +55,7 @@ if __name__ == "__main__":
     user_portfolio = Portfolio(balance)
 
     # Get Stocks
-    user_portfolio.setWatchStocks(getStocks(['AAPL']))
+    user_portfolio.setWatchStocks(getStocks(['TGTX']))
 
     # Perform Trading
     while True:

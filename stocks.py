@@ -8,11 +8,25 @@ class Stock:
         self.sell_upper_limit = 0.0
         self.sell_lower_limit = 0.0
         self.buy = True
+        self.buy_price = 0.0
+        self.sell_price = 0.0
 
     # Accessors
     def getStock(self):
         """ Returns a stock object """
         return yf.Ticker(self.ticker)
+
+    def getTicker(self):
+        return self.ticker
+
+    def getShares(self):
+        return self.shares
+
+    def getBuyPrice(self):
+        return self.buy_price
+
+    def getSellPrice(self):
+        return self.sell_price
 
     def getClose(self):
         """ Returns the last closing price of the stock """
@@ -33,17 +47,25 @@ class Stock:
     def buyStock(self, amount):
         """ Buys (numShares) amount of stock at the last closing price """
         if amount > self.getClose():
-            self.shares = amount / self.getClose()
+            self.shares = amount / self.getClose() # Can buy with existing shares
             self.buy = False
-            self.sell_lower_limit = self.getClose() - (self.getClose() * .01)
-            self.sell_upper_limit = self.getClose() + (self.getClose() * .005)
+            self.buy_price = self.getClose()
+            self.sell_lower_limit = self.buy_price - (self.buy_price * .005)
+            self.sell_upper_limit = self.buy_price + (self.buy_price * .0025)
+            return True
+        else:
+            print("Could not purchase stocks.")
+            return False
+        # return self.shares
 
-        return self.shares
-
-    def sellStock(self, amount):
+    def sellStock(self): # Sells certain numShares...
         """ Sells (numShares) amount of stock at the last closing price """
+        num_shares = self.shares # Get the number of shares before cleared (temporary)
         self.shares = 0
         self.buy = True
+        self.sell_price = self.getClose()
+        return num_shares
+
 
 def getStocks(tickers):
     # Select which stocks with web-scraping...
