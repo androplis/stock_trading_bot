@@ -5,6 +5,8 @@ class Stock:
     def __init__(self, ticker):
         self.ticker = ticker
         self.shares = 0
+        self.sell_upper_limit = 0.0
+        self.sell_lower_limit = 0.0
         self.buy = True
 
     # Accessors
@@ -21,18 +23,29 @@ class Stock:
         """ Returns the market value of the stock shares owned"""
         return self.getClose() * self.shares
 
-    # Buy / Sell
-    def buyStock(self, numShares):
-        """ Buys (numShares) amount of stock at the last closing price """
-        self.shares = numShares
-        self.buy = False
+    def getUpperLimit(self):
+        return self.sell_upper_limit
 
-    def sellStock(self, numShares):
+    def getLowerLimit(self):
+        return self.sell_lower_limit
+
+    # Buy / Sell
+    def buyStock(self, amount):
+        """ Buys (numShares) amount of stock at the last closing price """
+        if amount > self.getClose():
+            self.shares = amount / self.getClose()
+            self.buy = False
+            self.sell_lower_limit = self.getClose() - (self.getClose() * .01)
+            self.sell_upper_limit = self.getClose() + (self.getClose() * .005)
+
+        return self.shares
+
+    def sellStock(self, amount):
         """ Sells (numShares) amount of stock at the last closing price """
-        self.shares = numShares
+        self.shares = 0
         self.buy = True
 
-def getStock(tickers):
+def getStocks(tickers):
     # Select which stocks with web-scraping...
 
     stocks = list()
