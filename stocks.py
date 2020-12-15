@@ -1,5 +1,7 @@
 import yfinance as yf
 from datetime import datetime
+from selenium import webdriver
+from bs4 import BeautifulSoup as sp 
 
 class Stock:
     def __init__(self, ticker):
@@ -67,11 +69,17 @@ class Stock:
         return num_shares
 
 
-def getStocks(tickers):
-    # Select which stocks with web-scraping...
-
+def getStocks():
     stocks = list()
-    for ticker in tickers:
+    # Get 5 trending stocks
+    URL = 'https://stockbeep.com/trending-stocks'
+    driver = webdriver.Chrome('/Users/andrewbiddle/Desktop/chromedriver')
+    driver.get(URL)
+    html = driver.page_source
+    soup = sp(html, 'html.parser')
+    table_rows = soup.find_all('tr', {'role': 'row'})
+    for row in table_rows[1:6]:
+        ticker = row.a.string
         stock = Stock(ticker)
         stocks.append(stock)
 

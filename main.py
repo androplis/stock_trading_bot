@@ -36,7 +36,9 @@ class Portfolio:
                     if stock.buyStock(self.balance): # balance / 5
                         # write buy data to files
                         self.balance -= stock.getBuyPrice()
-                        print(f"{datetime.datetime.now()} | BUY | {stock.getTicker()} | ${stock.getBuyPrice()} | {stock.getShares()}")
+                        with open("day-trading-history.txt", 'a') as f:
+                            data = f"{datetime.datetime.now()} | BUY | {stock.getTicker()} | ${stock.getBuyPrice()} | {stock.getShares()}\n"
+                            f.write(data)
                 else: # Wait
                     print(MA_20[-1], " ", stock_history['Close'][-1], "- WAIT")
                     continue
@@ -46,7 +48,9 @@ class Portfolio:
                     num_shares = stock.sellStock()
                     self.balance += stock.getSellPrice()
                     print(MA_20[-1], " ", stock_history['Close'][-1], "- SELL")
-                    print(f"{datetime.datetime.now()} | SELL | {stock.getTicker()} | ${stock.getSellPrice()} | {num_shares}")
+                    with open("day-trading-history.txt", 'a') as f:
+                        data = f"{datetime.datetime.now()} | SELL | {stock.getTicker()} | ${stock.getSellPrice()} | {num_shares} | ${stock.getSellPrice() - stock.getBuyPrice()}\n"
+                        f.write(data)
                 else: # Hold
                     print(MA_20[-1], " ", stock_history['Close'][-1], "- HOLD")
 
@@ -55,7 +59,7 @@ if __name__ == "__main__":
     user_portfolio = Portfolio(balance)
 
     # Get Stocks
-    user_portfolio.setWatchStocks(getStocks(['TGTX']))
+    user_portfolio.setWatchStocks(getStocks())
 
     # Perform Trading
     while True:
