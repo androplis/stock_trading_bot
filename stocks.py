@@ -1,5 +1,5 @@
 import yfinance as yf
-from datetime import datetime
+import datetime
 from selenium import webdriver
 from bs4 import BeautifulSoup as sp 
 
@@ -48,26 +48,48 @@ class Stock:
     # Buy / Sell
     def buyStock(self, amount):
         """ Buys (numShares) amount of stock at the last closing price """
-        if amount > self.getClose():
+
+        stock_history = self.getStock().history(period="1d", interval="1m")
+        MA_20 = stock_history['Close'].rolling(20).mean() 
+        # Look to Buy the stock
+        if MA_20[-1] < self.getClose(): # Buy Trigger
             self.shares = amount / self.getClose() # Can buy with existing shares
             self.buy = False
-            self.buy_price = self.getClose()
-            self.sell_lower_limit = self.buy_price - (self.buy_price * .005)
+            self.buy_price = self.getClose() # Set Buy Price
+            self.sell_lower_limit = self.buy_price - (self.buy_price * .005)  # Set sell thresholds
             self.sell_upper_limit = self.buy_price + (self.buy_price * .0025)
-            return True
-        else:
-            print("Could not purchase stocks.")
-            return False
-        # return self.shares
 
-    def sellStock(self): # Sells certain numShares...
-        """ Sells (numShares) amount of stock at the last closing price """
-        num_shares = self.shares # Get the number of shares before cleared (temporary)
-        self.shares = 0
-        self.buy = True
-        self.sell_price = self.getClose()
-        return num_shares
+            print(MA_20[-1], " ", stock_history['Close'][-1], "- BUY") # Record buy
+            with open("day-trading-history.txt", 'a+') as f:
+                data = f"{datetime.datetime.now()} | BUY | {self.getTicker()} | ${self.getBuyPrice()} | {self.getShares()}\n"
+                f.write(data)
 
+            return self.getMarketValue()
+        else: # WAIT (Temporary)
+            print(MA_20[-1], " ", stock_history['Close'][-1], "- WAIT")
+            return 0.0
+
+    def sellStock(self): # Right now, sells all the shares, eventually will sell temporary amount
+        """ Sells (numShares) amount of stock at the last closing price """ 
+        # Temporary for sell validation purposes
+        stock_history = self.getStock().history(period="1d", interval="1m") #
+        MA_20 = stock_history['Close'].rolling(20).mean()  #
+        # Look to Sell the stock
+        if self.getClose() >= self.getUpperLimit() or self.getClose() <= self.getLowerLimit(): # Sell Thresholds
+            num_shares = self.shares # Get the number of shares before cleared (temporary)
+            self.shares = 0
+            self.buy = True
+            self.sell_price = self.getClose()
+
+            print(MA_20[-1], " ", stock_history['Close'][-1], "- SELL") # Record Sell
+            with open("day-trading-history.txt", 'a') as f:
+                data = f"{datetime.datetime.now()} | SELL | {self.getTicker()} | ${self.getSellPrice()} | {num_shares} | ${self.getSellPrice() - self.getBuyPrice()}\n"
+                f.write(data)
+
+            return self.getMarketValue()
+        else: # Hold (Temporary)
+            print(MA_20[-1], " ", stock_history['Close'][-1], "- HOLD")
+            return 0.0
 
 def getStocks():
     stocks = list()

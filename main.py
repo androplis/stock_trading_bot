@@ -18,12 +18,14 @@ if __name__ == "__main__":
     while True:
         if counter <= trading_time:
             user_portfolio.buySell() # Perform trading
+            print("Balance: ", user_portfolio.getBalance())
             counter += 1 / 60
             time.sleep(60) # Run every min
-        else:
+        else: # Closing tasks
             # Sell every stock
-            for stock in user_portfolio.getWatchStocks():
-                #Sell stock
             # Calculate total return
             print(f"==================== Trading Report for {datetime.datetime.date()}")
+            # Read file contents and format them for report
+            # Would you like to save report?
+            # Delete file contents
             break
