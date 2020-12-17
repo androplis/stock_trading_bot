@@ -69,13 +69,13 @@ class Stock:
             print(MA_20[-1], " ", stock_history['Close'][-1], "- WAIT")
             return 0.0
 
-    def sellStock(self): # Right now, sells all the shares, eventually will sell temporary amount
+    def sellStock(self, force_sell): # Right now, sells all the shares, eventually will sell temporary amount
         """ Sells (numShares) amount of stock at the last closing price """ 
         # Temporary for sell validation purposes
         stock_history = self.getStock().history(period="1d", interval="1m") #
         MA_20 = stock_history['Close'].rolling(20).mean()  #
         # Look to Sell the stock
-        if self.getClose() >= self.getUpperLimit() or self.getClose() <= self.getLowerLimit(): # Sell Thresholds
+        if (self.getClose() >= self.getUpperLimit() or self.getClose() <= self.getLowerLimit()) or force_sell: # Sell Thresholds
             num_shares = self.shares # Get the number of shares before cleared (temporary)
             self.shares = 0
             self.buy = True
@@ -86,7 +86,7 @@ class Stock:
                 data = f"{datetime.datetime.now()} | SELL | {self.getTicker()} | ${self.getSellPrice()} | {num_shares} | ${self.getSellPrice() - self.getBuyPrice()}\n"
                 f.write(data)
 
-            return self.getMarketValue()
+            return num_shares * self.sell_price
         else: # Hold (Temporary)
             print(MA_20[-1], " ", stock_history['Close'][-1], "- HOLD")
             return 0.0

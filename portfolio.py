@@ -25,6 +25,6 @@ class Portfolio:
         for stock in self.watch_stocks:
             if stock.buy:
                 if self.balance / len(self.watch_stocks) > 0: # Check if there is money to be invested
-                    self.balance -= stock.buyStock(self.balance / len(self.watch_stocks))
+                    self.balance -= stock.buyStock(self.balance / len([stock for stock in self.watch_stocks if stock.buy]))
             else: 
-                self.balance += stock.sellStock()
+                self.balance += stock.sellStock(False)
