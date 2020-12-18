@@ -1,21 +1,25 @@
 import yfinance as yf
 import time
 import datetime
+import os
 from stocks import getStocks
 from stocks import Stock
 from portfolio import Portfolio
 
 if __name__ == "__main__":
-    #initial_balance = float(input("Enter balance: "))
+    # Get starting balance
     initial_balance = 0.0
     with open("day-trading-history.txt", 'r') as f:
-        contents = f.read()
-        if contents != "" and len(contents) < 1:
-            initial_balance += float(contents) # read in previous balance
+        file_size = os.path.getsize("day-trading-history.txt")
+        if file_size != 0:
+            for line in f:
+                pass
+            initial_balance = line.split()[3]
         else:
-            initial_balance += float(input('No balance. Add money to trade?'))
+            initial_balance = float(input("Enter a balance to begin trading: "))
     user_portfolio = Portfolio(initial_balance) # Create porfolio
     print(initial_balance) #
+    # Set timers
     counter = 0.0
     trading_time = float(input("How long would you like to trade? (in hrs): "))
 
@@ -46,15 +50,7 @@ if __name__ == "__main__":
                     trading_history.append(line)
                     print(line)
 
-            # Save report?
-            # save_report = input("Would you like to save the report (y/n): ")
-            # if save_report == 'y' or save_report == 'Y':
-            #     file_name = input("Enter the file name: ")
-            #     with open(f"/trading-reports/{file_name}", "w") as f:
-            #         for line in trading_history:
-            #             f.write(line)
-
-            # Delete file contents and save balance 
-            with open("day-trading-history.txt", 'w') as f:
-                f.write(str(user_portfolio.getBalance()) + "\n") # Write balance to file
+            # Save balance and trading activity
+            with open("day-trading-history.txt", 'a') as f:
+                f.write(f"{datetime.datetime.now()} {total_return} {str(user_portfolio.getBalance())}") # Write balance to file
             break
