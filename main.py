@@ -6,18 +6,26 @@ from stocks import getStocks
 from stocks import Stock
 from portfolio import Portfolio
 
+def getBalance():
+    """ Opens trading-history file and returns the last balance if it exists"""
+    if os.path.exists('files/trading-history.txt'):
+        initial_balance = 0.0
+        with open("files/trading-history.txt", 'r') as f:
+            file_size = os.path.getsize("files/trading-history.txt")
+            if file_size != 0:
+                for line in f:
+                    pass
+                initial_balance = float(line.split()[3])
+            else:
+                initial_balance = float(input("Enter a balance to begin trading: "))
+    else:
+        initial_balance = float(input("Enter a balance to begin trading: "))
+
+    return initial_balance
+
 if __name__ == "__main__":
-    # Get starting balance
-    initial_balance = 0.0
-    with open("day-trading-history.txt", 'r') as f:
-        file_size = os.path.getsize("day-trading-history.txt")
-        if file_size != 0:
-            for line in f:
-                pass
-            initial_balance = line.split()[3]
-        else:
-            initial_balance = float(input("Enter a balance to begin trading: "))
-    user_portfolio = Portfolio(initial_balance) # Create porfolio
+    initial_balance = getBalance()
+    user_portfolio = Portfolio(initial_balance) 
     print(initial_balance) #
     # Set timers
     counter = 0.0
@@ -44,13 +52,13 @@ if __name__ == "__main__":
             print(f"==================== Trading Report for {datetime.date.today()}")
             print(f"\nTotal Return: {total_return}\n")
             trading_history = list()
-            with open("day-trading-history.txt", 'r') as f:
-                for line in f:
-                    # Make report more pleasurable
-                    trading_history.append(line)
-                    print(line)
+            # with open("files/trading-history.txt", 'r') as f:
+            #     for line in f:
+            #         # Make report more pleasurable
+            #         trading_history.append(line)
+            #         print(line)
 
             # Save balance and trading activity
-            with open("day-trading-history.txt", 'a') as f:
-                f.write(f"{datetime.datetime.now()} {total_return} {str(user_portfolio.getBalance())}") # Write balance to file
+            with open("files/trading-history.txt", 'a') as f:
+                f.write(f"{datetime.datetime.now()} {total_return} {str(user_portfolio.getBalance())}\n") # Write balance to file
             break
