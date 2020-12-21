@@ -10,15 +10,15 @@ class Portfolio:
     def setWatchStocks(self, stocks):
         self.watch_stocks = stocks
 
+    def setBalance(self, amount):
+        self.balance = amount
+
     # Accessors
     def getBalance(self):
         return self.balance
 
     def getWatchStocks(self):
         return self.watch_stocks
-
-    def setBalance(self, amount):
-        self.balance = amount
 
     def buySell(self):
         """ Looks at each stock and determines whether to buy or sell """

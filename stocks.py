@@ -60,9 +60,9 @@ class Stock:
             self.sell_upper_limit = self.buy_price + (self.buy_price * .0025)
 
             print(MA_20[-1], " ", stock_history['Close'][-1], "- BUY") # Record buy
-            # with open("day-trading-history.txt", 'a+') as f:
-            #     data = f"{datetime.datetime.now()} | BUY | {self.getTicker()} | ${self.getBuyPrice()} | {self.getShares()}\n"
-            #     f.write(data)
+            with open("files/buysell-session-history.txt", 'a') as f:
+                data = f"{datetime.datetime.now()} BUY {self.getTicker()} {self.getBuyPrice()} {self.getShares()}\n"
+                f.write(data)
 
             return self.getMarketValue()
         else: # WAIT (Temporary)
@@ -82,9 +82,9 @@ class Stock:
             self.sell_price = self.getClose()
 
             print(MA_20[-1], " ", stock_history['Close'][-1], "- SELL") # Record Sell
-            # with open("day-trading-history.txt", 'a') as f:
-            #     data = f"{datetime.datetime.now()} | SELL | {self.getTicker()} | ${self.getSellPrice()} | {num_shares} | ${self.getSellPrice() - self.getBuyPrice()}\n"
-            #     f.write(data)
+            with open("files/buysell-session-history.txt", 'a') as f:
+                data = f"{datetime.datetime.now()} SELL {self.getTicker()} {self.getSellPrice()} {num_shares} {(self.getSellPrice() - self.getBuyPrice()) * num_shares}\n"
+                f.write(data)
 
             return num_shares * self.sell_price
         else: # Hold (Temporary)
