@@ -9,6 +9,8 @@ Stockbeep is a stock scanner that provides stock information for "informational 
 - [Python3](https://www.python.org/download/releases/3.0/)
 - [yfinance](https://pypi.org/project/yfinance/)
 - [chrome-web-driver](https://chromedriver.chromium.org/downloads)
+- [selenium](https://selenium-python.readthedocs.io/)
+- [BeautifulSoup](https://pypi.org/project/beautifulsoup4/)
 
 ## Usage
 This program runs through a command line and stores information in local files. Use the command `python3 main.py` to begin the script. You will then be prompted 
