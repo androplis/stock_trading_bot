@@ -95,7 +95,7 @@ def getStocks():
     stocks = list()
     # Get 5 trending stocks
     URL = 'https://stockbeep.com/trending-stocks'
-    driver = webdriver.Chrome('/Users/andrewbiddle/Desktop/chromedriver')
+    driver = webdriver.Chrome('driver/chromedriver')
     driver.get(URL)
     html = driver.page_source
     soup = sp(html, 'html.parser')
